@@ -29,5 +29,6 @@ dependencies {
      * 系统库
      */
     compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'io.reactivex:rxandroid:1.2.1'
     compile project(':retrofit')
 }
