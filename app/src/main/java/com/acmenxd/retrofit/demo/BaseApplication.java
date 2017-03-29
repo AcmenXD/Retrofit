@@ -155,8 +155,8 @@ public final class BaseApplication extends Application {
             }
         };
         NetManager.newBuilder()
-                .setContext(this)// 上下文对象
-                .setParseNetCode(parseNetCode)// 统一处理NetCode回调
+                .setContext(this)// 上下文对象(*必须设置)
+                .setParseNetCode(parseNetCode)// 统一处理NetCode回调(如不设置则不会处理NetCode)
                 .setBase_url(BASE_URL)// 基础URL地址
                 .setNet_log_open(NET_LOG_OPEN)// Net Log 的开关
                 .setNet_log_level(NET_LOG_LEVEL) // Net Log 的日志级别

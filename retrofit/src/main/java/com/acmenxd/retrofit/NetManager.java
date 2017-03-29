@@ -160,7 +160,7 @@ public enum NetManager {
         // 统一处理NetCode回调
         private NetCodeUtils.startParseNetCode parseNetCode;
         // 基础URL地址
-        private String base_url;
+        private String base_url = "";
         // Net Log 的开关
         private boolean net_log_open = true;
         // Net Log 的日志级别
