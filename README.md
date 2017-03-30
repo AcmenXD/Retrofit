@@ -69,11 +69,11 @@ public static final int NET_CACHE_TYPE = 1;
 // 网络缓存大小(MB)
 public static final int NET_CACHE_SIZE = 10;
 // 网络连接超时时间(秒)
-public static final int CONNECT_TIMEOUT = 20;
+public static final int CONNECT_TIMEOUT = 30;
 // 读取超时时间(秒)
-public static final int READ_TIMEOUT = 20;
+public static final int READ_TIMEOUT = 30;
 // 写入超时时间(秒)
-public static final int WRITE_TIMEOUT = 20;
+public static final int WRITE_TIMEOUT = 30;
 // 非Form表单形式的请求体,是否加入公共Body
 public static final boolean NOFORMBODY_CANADDBODY = false;
 // 公共请求参数
@@ -297,7 +297,7 @@ public final <T> Subscriber<T> newSubscriber(final NetSubscriber<T> pSubscriber)
 }
 ```
 ---
-**其他请求及上传下载请移步https://github.com/AcmenXD/Retrofit 下载Demo查看**
+**其他请求方式及上传下载请移步https://github.com/AcmenXD/Retrofit 下载Demo查看**
 ---
 ### 打个小广告^_^
 **gitHub** : https://github.com/AcmenXD   如对您有帮助,欢迎点Star支持,谢谢~
