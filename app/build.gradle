@@ -29,6 +29,12 @@ dependencies {
      * 系统库
      */
     compile 'com.android.support:appcompat-v7:25.0.0'
+    /**
+     * 响应式编程
+     */
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile project(':retrofit')
+    /**
+     *
+     */
+    compile 'com.github.AcmenXD:Retrofit:1.0'
 }
