@@ -34,7 +34,7 @@ dependencies {
      */
     compile 'io.reactivex:rxandroid:1.2.1'
     /**
-     *
+     * 基于Retrofit进行的封装
      */
     compile 'com.github.AcmenXD:Retrofit:1.0'
 }

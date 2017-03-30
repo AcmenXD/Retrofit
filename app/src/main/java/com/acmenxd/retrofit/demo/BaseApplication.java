@@ -79,8 +79,8 @@ public final class BaseApplication extends Application {
      */
     // 请求地址配置 -1:正式版  0->预发布  1->测试1  2->测试2  3->测试3
     public static final byte URL_Type = 1;
+    // 基础url配置
     public static final String BASE_URL;
-
     // 配置连接地址
     static {
         switch (URL_Type) {
@@ -105,7 +105,6 @@ public final class BaseApplication extends Application {
                 break;
         }
     }
-
     // Net Log 的开关
     public static final boolean NET_LOG_OPEN = true;
     // Net Log 的日志级别
@@ -121,11 +120,11 @@ public final class BaseApplication extends Application {
     // 网络缓存大小(MB)
     public static final int NET_CACHE_SIZE = 10;
     // 网络连接超时时间(秒)
-    public static final int CONNECT_TIMEOUT = 30;
+    public static final int CONNECT_TIMEOUT = 20;
     // 读取超时时间(秒)
-    public static final int READ_TIMEOUT = 30;
+    public static final int READ_TIMEOUT = 20;
     // 写入超时时间(秒)
-    public static final int WRITE_TIMEOUT = 30;
+    public static final int WRITE_TIMEOUT = 20;
     // 非Form表单形式的请求体,是否加入公共Body
     public static final boolean NOFORMBODY_CANADDBODY = false;
     // 公共请求参数
@@ -136,8 +135,7 @@ public final class BaseApplication extends Application {
     public static final Map<String, String> HeaderMaps2 = new HashMap<>();
     // 公共Body
     public static final Map<String, String> BodyMaps = new HashMap<>();
-
-    // 配置请求公共需求
+    // 添加公共信息
     static {
         ParameterMaps.put("parameter_key_1", "parameter_value_1");
         ParameterMaps.put("parameter_key_2", "parameter_value_2");
@@ -146,7 +144,6 @@ public final class BaseApplication extends Application {
         BodyMaps.put("body_key_1", "body_value_1");
         BodyMaps.put("body_key_2", "body_value_2");
     }
-
     public void initRetrofit() {
         NetCodeUtils.startParseNetCode parseNetCode = new NetCodeUtils.startParseNetCode() {
             @Override
@@ -157,7 +154,7 @@ public final class BaseApplication extends Application {
         NetManager.newBuilder()
                 .setContext(this)// 上下文对象(*必须设置)
                 .setParseNetCode(parseNetCode)// 统一处理NetCode回调(如不设置则不会处理NetCode)
-                .setBase_url(BASE_URL)// 基础URL地址
+                .setBase_url(BASE_URL)// 基础URL地址(*必须设置)
                 .setNet_log_open(NET_LOG_OPEN)// Net Log 的开关
                 .setNet_log_level(NET_LOG_LEVEL) // Net Log 的日志级别
                 .setNet_log_tag(NET_LOG_TAG) // Net Log 的日志Tag

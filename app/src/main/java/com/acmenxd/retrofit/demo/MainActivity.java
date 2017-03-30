@@ -34,7 +34,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Func1;
 
 /**
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
      * post请求
      */
     public void postClick(View view) {
-        Subscription subscription = request().post("token...")
+        request().post("token...")
                 .compose(RxUtils.<NetEntity<TestEntity>>applySchedulers())
                 //上面一行代码,等同于下面的这两行代码
                 //.subscribeOn(Schedulers.io())
@@ -163,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         return pData.getData();
                     }
                 })
+                // 这里的true表示请求期间对数据进行过处理,这样Retrofit无法识别处理后的数据,所以需要开发者手动处理错误异常
                 .subscribe(newSubscriber(new NetSubscriber<TestEntity>(true) {
                     @Override
                     public void succeed(final TestEntity pData) {
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     public void finished() {
 
                     }
-                }, true));
+                }));
     }
 
     /**
@@ -312,12 +312,8 @@ public class MainActivity extends AppCompatActivity {
      * 统一处理因异步导致的 Activity|Fragment销毁时发生NullPointerException问题
      *
      * @param pCallback Net请求回调
-     * @param setting   数组下标 ->
-     *                  0.是否显示LoadingDialog(默认false)
-     *                  1.isCancelable(是否可以通过点击Back键取消)(默认true)
-     *                  2.isCanceledOnTouchOutside(是否在点击Dialog外部时取消Dialog)(默认false)
      */
-    public final <T> Callback<T> newCallback(final NetCallback<T> pCallback, final boolean... setting) {
+    public final <T> Callback<T> newCallback(final NetCallback<T> pCallback) {
         return new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, Response<T> response) {
@@ -339,12 +335,8 @@ public class MainActivity extends AppCompatActivity {
      * 统一处理因异步导致的 Activity|Fragment销毁时发生NullPointerException问题
      *
      * @param pSubscriber Net请求回调
-     * @param setting     数组下标 ->
-     *                    0.是否显示LoadingDialog(默认false)
-     *                    1.isCancelable(是否可以通过点击Back键取消)(默认true)
-     *                    2.isCanceledOnTouchOutside(是否在点击Dialog外部时取消Dialog)(默认false)
      */
-    public final <T> Subscriber<T> newSubscriber(final NetSubscriber<T> pSubscriber, final boolean... setting) {
+    public final <T> Subscriber<T> newSubscriber(final NetSubscriber<T> pSubscriber) {
         return new Subscriber<T>() {
             @Override
             public void onCompleted() {
