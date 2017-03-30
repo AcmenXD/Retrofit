@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit;
 
+import java.io.Serializable;
+
 /**
  * @author AcmenXD
  * @version v1.0
@@ -7,7 +9,8 @@ package com.acmenxd.retrofit;
  * @date 2017/1/3 15:26
  * @detail 顶级解析实体类
  */
-public class NetEntity<T> {
+public class NetEntity<T> implements Serializable {
+
     private int code;
     private String msg;
     private T data;

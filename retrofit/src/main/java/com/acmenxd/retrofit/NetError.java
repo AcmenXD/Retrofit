@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.ParseException;
 
 import com.acmenxd.retrofit.exception.NetException;
@@ -53,12 +55,13 @@ public final class NetError {
      * 异常状态码 -> 请求异常
      */
     public static final int ERROR = -10; // 统一异常,找不到已定义的异常时,统一发送此异常
-    public static final int ERROR_Http = -100; // 网络异常
-    public static final int ERROR_SocketTimeout = -101; // socket连接超时异常
-    public static final int ERROR_Connect = -102; // 连接异常
-    public static final int ERROR_Parse = -103; // 解析异常
-    public static final int ERROR_SSL = -104; // 证书验证失败
-    public static final int ERROR_HOST = -105; // IP地址无法确定
+    public static final int ERROR_Http = -100; // 统一的HttpException类型异常
+    public static final int ERROR_NO_NETWORK = -101; // 无网络连接
+    public static final int ERROR_HOST = -102; // 网络已连接,但无法访问Internet -> 主机IP地址无法确定
+    public static final int ERROR_SocketTimeout = -103; // socket连接超时异常
+    public static final int ERROR_Connect = -104; // 连接异常
+    public static final int ERROR_Parse = -105; // 解析异常
+    public static final int ERROR_SSL = -106; // 证书验证失败
 
     /**
      * 异常状态码 -> 自定义异常
@@ -75,9 +78,21 @@ public final class NetError {
         String msg = MSG;
         String toastMsg = TOAST_MSG;
         /**
+         * 检查网络连接
+         */
+        if (!checkNetWork()) {
+            code = ERROR_NO_NETWORK;
+            msg = "无网络连接";
+            toastMsg = "无网络连接";
+        } else if (pE instanceof UnknownHostException) {
+            code = ERROR_HOST;
+            msg = "网络已连接,但无法访问Internet";
+            toastMsg = "网络已连接,但无法访问Internet";
+        }
+        /**
          * 系统异常
          */
-        if (pE instanceof HttpException) {
+        else if (pE instanceof HttpException) {
             HttpException httpException = (HttpException) pE;
             switch (httpException.code()) {
                 case ERROR_UNAUTHORIZED:
@@ -122,7 +137,7 @@ public final class NetError {
                     break;
                 default:
                     code = ERROR_Http;
-                    msg = "网络错误";
+                    msg = "HttpException";
                     break;
             }
         }
@@ -141,9 +156,6 @@ public final class NetError {
         } else if (pE instanceof SSLHandshakeException) {
             code = ERROR_SSL;
             msg = "证书验证失败";
-        } else if (pE instanceof UnknownHostException) {
-            code = ERROR_HOST;
-            msg = "主机IP地址无法确定";
         }
         /**
          * 自定义
@@ -162,4 +174,20 @@ public final class NetError {
         }
         return new NetException(pE, code, msg, toastMsg);
     }
+
+    /**
+     * 检查网络是否连接
+     */
+    private static boolean checkNetWork() {
+        boolean result = false;
+        Context context = NetManager.INSTANCE.getBuilder().getContext();
+        // 网络连接信息
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        // 进行判断网络是否连接
+        if (manager != null && manager.getActiveNetworkInfo() != null) {
+            result = manager.getActiveNetworkInfo().isAvailable();
+        }
+        return result;
+    }
+
 }

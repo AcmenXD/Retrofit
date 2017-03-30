@@ -111,7 +111,7 @@ public final class BaseApplication extends Application {
     // Net Log 的日志级别
     public static final int NET_LOG_LEVEL = Log.WARN;
     // Net Log 的日志Tag
-    public static final String NET_LOG_TAG = "LogNet";
+    public static final String NET_LOG_TAG = "NetLog";
     // Net Log 的日志显示形式 -> 是否显示 "请求头 请求体 响应头 错误日志" 等详情
     public static final boolean NET_LOG_DETAILS = true;
     // Net Log 的日志显示形式 -> 是否显示请求过程中的日志,包含详细的请求头日志
@@ -163,7 +163,7 @@ public final class BaseApplication extends Application {
                 .setNet_log_tag(NET_LOG_TAG) // Net Log 的日志Tag
                 .setNet_log_details(NET_LOG_DETAILS)// Net Log 的日志显示形式 -> 是否显示 "请求头 请求体 响应头 错误日志" 等详情
                 .setNet_log_details_all(NET_LOG_DETAILS_All)// Net Log 的日志显示形式 -> 是否显示请求过程中的日志,包含详细的请求头日志
-                .setNet_cache_dir(new File(BaseApplication.instance().getCacheDir(), "cache"))  // 网络缓存默认存储路径
+                .setNet_cache_dir(new File(BaseApplication.instance().getCacheDir(), "NetCache"))  // 网络缓存默认存储路径
                 .setNet_cache_type(NET_CACHE_TYPE) // 网络缓存策略: 0->不启用缓存  1->遵从服务器缓存配置
                 .setNet_cache_size(NET_CACHE_SIZE) // 网络缓存大小(MB)
                 .setConnect_timeout(CONNECT_TIMEOUT)  // 网络连接超时时间(秒)
