@@ -26,6 +26,8 @@ public final class BaseApplication extends Application {
     private static BaseApplication sInstance = null;
     // 初始化状态 -> 默认false,初始化完成为true
     public boolean isInitFinish = false;
+    // 记录启动时间
+    public long startTime = 0;
 
     public BaseApplication() {
         super();
@@ -41,6 +43,7 @@ public final class BaseApplication extends Application {
 
     @Override
     public void onCreate() {
+        startTime = System.currentTimeMillis();
         // 程序创建的时候执行
         super.onCreate();
         // 初始化网络Retrofit
