@@ -1,5 +1,9 @@
 # Retrofit
 基于<a href="https://github.com/square/retrofit">Retrofit</a>进行的封装
+
+如要了解功能实现,请运行app程序查看控制台日志和源代码!
+* 源代码 : <a href="https://github.com/AcmenXD/Retrofit">AcmenXD/Retrofit</a>
+* apk下载路径 : <a href="https://github.com/AcmenXD/Resource/blob/master/apks/Retrofit.apk">Retrofit.apk</a>
 ### 依赖
 ---
 - AndroidStudio
