@@ -2,6 +2,7 @@ package com.acmenxd.retrofit;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.ParseException;
 
 import com.acmenxd.retrofit.exception.NetException;
@@ -184,8 +185,13 @@ public final class NetError {
         // 网络连接信息
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         // 进行判断网络是否连接
-        if (manager != null && manager.getActiveNetworkInfo() != null) {
-            result = manager.getActiveNetworkInfo().isAvailable();
+        if (manager != null) {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info != null && info.isConnected()) {
+                if (info.getState() == NetworkInfo.State.CONNECTED) {
+                    result = true;
+                }
+            }
         }
         return result;
     }
