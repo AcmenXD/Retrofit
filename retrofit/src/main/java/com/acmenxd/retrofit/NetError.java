@@ -2,6 +2,7 @@ package com.acmenxd.retrofit;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.ParseException;
 
@@ -182,14 +183,34 @@ public final class NetError {
     private static boolean checkNetWork() {
         boolean result = false;
         Context context = NetManager.INSTANCE.getBuilder().getContext();
-        // 网络连接信息
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        // 进行判断网络是否连接
-        if (manager != null) {
-            NetworkInfo info = manager.getActiveNetworkInfo();
-            if (info != null && info.isConnected()) {
-                if (info.getState() == NetworkInfo.State.CONNECTED) {
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connMgr == null) {
+            return result;
+        }
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+            //检测API是不是小于23，因为到了API23之后getNetworkInfo(int networkType)方法被弃用
+            //获取WIFI连接的信息
+            NetworkInfo wifiNetworkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiNetworkInfo != null && wifiNetworkInfo.isConnected()) {
+                result = true;
+            } else {
+                //获取移动数据连接的信息
+                NetworkInfo dataNetworkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                if (dataNetworkInfo != null && dataNetworkInfo.isConnected()) {
                     result = true;
+                }
+            }
+        } else {
+            //API大于23时使用下面的方式进行网络监听
+            //获取所有网络连接的信息
+            Network[] networks = connMgr.getAllNetworks();
+            if (networks != null && networks.length > 0) {
+                for (int i = 0, len = networks.length; i < len; i++) {
+                    NetworkInfo networkInfo = connMgr.getNetworkInfo(networks[i]);
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        result = true;
+                        break;
+                    }
                 }
             }
         }
