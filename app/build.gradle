@@ -36,5 +36,5 @@ dependencies {
     /**
      * 基于Retrofit进行的封装
      */
-    compile 'com.github.AcmenXD:Retrofit:1.0'
+    compile 'com.github.AcmenXD:Retrofit:1.1'
 }
