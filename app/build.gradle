@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.acmenxd.retrofit.demo"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -36,5 +36,6 @@ dependencies {
     /**
      * 基于Retrofit进行的封装
      */
-    compile 'com.github.AcmenXD:Retrofit:1.1'
+    //    compile 'com.github.AcmenXD:Retrofit:1.1'
+    compile project(':retrofit')
 }
