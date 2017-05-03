@@ -16,7 +16,7 @@
 	}
 ```
 ```
-	 compile 'com.github.AcmenXD:Retrofit:1.1'
+	 compile 'com.github.AcmenXD:Retrofit:1.2'
 ```
 ### 混淆
 ---
