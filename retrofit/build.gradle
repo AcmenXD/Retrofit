@@ -31,8 +31,8 @@ dependencies {
      * 系统库
      */
     compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.github.AcmenXD:SpTool:1.1'
-    compile 'com.github.AcmenXD:Logger:1.5'
+    compile 'com.github.AcmenXD:SpTool:1.2'
+    compile 'com.github.AcmenXD:Logger:2.0'
     /**
      * 响应式编程
      */

@@ -1,6 +1,7 @@
 package com.acmenxd.retrofit.callback;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.acmenxd.retrofit.NetCodeUtils;
 import com.acmenxd.retrofit.NetEntity;
@@ -44,14 +45,14 @@ public abstract class NetSubscriber<T> {
      * 请求成功回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void succeed(T pData) {
+    public void succeed(@NonNull T pData) {
     }
 
     /**
      * 请求失败回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void failed(NetException pE) {
+    public void failed(@NonNull NetException pE) {
         NetLog.print("net failed : code -> " + pE.getCode() + " , msg -> " + pE.getMsg());
     }
 
@@ -67,7 +68,7 @@ public abstract class NetSubscriber<T> {
     }*/
 
     // ---------------------------- 统一处理函数,无需关心 ------------------------
-    public final void onNext(final T data) {
+    public final void onNext(@NonNull final T data) {
         if (isAlreadyOperationData) {
             success(data);
             return;
@@ -121,7 +122,7 @@ public abstract class NetSubscriber<T> {
         }
     }
 
-    public final void onError(Throwable pE) {
+    public final void onError(@NonNull Throwable pE) {
         fail(NetError.parseException(pE));
     }
 
@@ -133,7 +134,7 @@ public abstract class NetSubscriber<T> {
      * 请求成功
      * * 每个回调方法->成功的 都会调用
      */
-    private final void success(T pData) {
+    private final void success(@NonNull T pData) {
         succeed(pData);
     }
 
@@ -141,7 +142,7 @@ public abstract class NetSubscriber<T> {
      * 请求失败
      * * 每个回调方法->失败的 都会调用
      */
-    private final void fail(NetException pE) {
+    private final void fail(@NonNull NetException pE) {
         failed(pE);
     }
 

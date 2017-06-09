@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.interceptor;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -36,7 +38,7 @@ public final class GzipInterceptor implements Interceptor {
     /**
      * gzip 压缩
      */
-    private RequestBody gzip(final RequestBody body) {
+    private RequestBody gzip(@NonNull final RequestBody body) {
         return new RequestBody() {
             @Override
             public MediaType contentType() {

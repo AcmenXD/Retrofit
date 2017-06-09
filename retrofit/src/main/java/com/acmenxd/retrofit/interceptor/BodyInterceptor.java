@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.interceptor;
 
+import android.support.annotation.NonNull;
+
 import com.acmenxd.retrofit.NetManager;
 
 import java.io.IOException;
@@ -56,7 +58,7 @@ public final class BodyInterceptor implements Interceptor {
         return chain.proceed(requestBuilder.build());
     }
 
-    private String bodyToString(final RequestBody request) {
+    private String bodyToString(@NonNull final RequestBody request) {
         try {
             final RequestBody copy = request;
             final Buffer buffer = new Buffer();

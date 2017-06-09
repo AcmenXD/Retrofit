@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.exception;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author AcmenXD
  * @version v1.0
@@ -8,7 +10,7 @@ package com.acmenxd.retrofit.exception;
  * @detail Net数据异常返回
  */
 public class NetExceptionFail extends NetException {
-    public NetExceptionFail(int pCode, String pMsg, String pToastMsg) {
+    public NetExceptionFail(int pCode, @NonNull String pMsg, @NonNull String pToastMsg) {
         super(pCode, pMsg, pToastMsg);
     }
 }

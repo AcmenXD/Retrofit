@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.converter;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -20,7 +22,7 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     private final Gson gson;
     private final TypeAdapter<T> adapter;
 
-    GsonResponseBodyConverter(Gson gson, TypeAdapter<T> adapter) {
+    GsonResponseBodyConverter(@NonNull Gson gson, @NonNull TypeAdapter<T> adapter) {
         this.gson = gson;
         this.adapter = adapter;
     }

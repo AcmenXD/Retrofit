@@ -1,6 +1,7 @@
 package com.acmenxd.retrofit.converter;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -28,11 +29,11 @@ public final class CustomConverterFactory extends Converter.Factory {
         return new CustomConverterFactory();
     }
 
-    public static CustomConverterFactory create(Gson gson) {
+    public static CustomConverterFactory create(@NonNull Gson gson) {
         return new CustomConverterFactory(gson);
     }
 
-    private CustomConverterFactory(Gson gson) {
+    private CustomConverterFactory(@NonNull Gson gson) {
         if (gson != null) {
             mGson = gson;
         } else {

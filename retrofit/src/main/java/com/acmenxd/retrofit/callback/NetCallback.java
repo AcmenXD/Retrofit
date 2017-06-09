@@ -1,6 +1,7 @@
 package com.acmenxd.retrofit.callback;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.acmenxd.retrofit.NetCodeUtils;
 import com.acmenxd.retrofit.NetEntity;
@@ -48,28 +49,28 @@ public abstract class NetCallback<T> {
      * 请求成功回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void succeed(T pData) {
+    public void succeed(@NonNull T pData) {
     }
 
     /**
      * 请求失败回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void succeed(Response pResponse, T pData) {
+    public void succeed(@NonNull Response pResponse, @NonNull T pData) {
     }
 
     /**
      * 请求失败回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void succeed(Call pCall, Response pResponse, T pData) {
+    public void succeed(@NonNull Call pCall, @NonNull Response pResponse, @NonNull T pData) {
     }
 
     /**
      * 请求失败回调
      * * 非必须重写,可根据需要自行实现
      */
-    public void failed(NetException pE) {
+    public void failed(@NonNull NetException pE) {
         NetLog.print("net failed : code -> " + pE.getCode() + " , msg -> " + pE.getMsg());
     }
 
@@ -78,7 +79,7 @@ public abstract class NetCallback<T> {
     }*/
 
     // ---------------------------- 统一处理函数,无需关心 ------------------------
-    public final void onResponse(final Call<T> call, final Response<T> response) {
+    public final void onResponse(@NonNull final Call<T> call, @NonNull final Response<T> response) {
         // 服务器合理响应
         if (response.raw().code() == NetError.SUCCESS_RESPONSE) {
             final T data = response.body();
@@ -140,7 +141,7 @@ public abstract class NetCallback<T> {
         }
     }
 
-    public final void onFailure(Call<T> call, Throwable t) {
+    public final void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
         fail(NetError.parseException(t));
     }
 
@@ -148,7 +149,7 @@ public abstract class NetCallback<T> {
      * 请求成功
      * * 每个回调方法->成功的 都会调用
      */
-    private final void success(Call pCall, Response pResponse, T pData) {
+    private final void success(@NonNull Call pCall, @NonNull Response pResponse, @NonNull T pData) {
         succeed(pData);
         succeed(pResponse, pData);
         succeed(pCall, pResponse, pData);
@@ -158,7 +159,7 @@ public abstract class NetCallback<T> {
      * 请求失败
      * * 每个回调方法->失败的 都会调用
      */
-    private final void fail(NetException pE) {
+    private final void fail(@NonNull NetException pE) {
         failed(pE);
     }
 

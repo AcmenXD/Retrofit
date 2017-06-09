@@ -1,6 +1,7 @@
 package com.acmenxd.retrofit.interceptor;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.format.Formatter;
 
 import com.acmenxd.logger.LogTag;
@@ -114,7 +115,7 @@ public final class LoggerInterceptor implements Interceptor {
             NetLog.print(sb.toString());
             // 显示详情
             if (logDetails) {
-                if(net_log_open) {
+                if (net_log_open) {
                     Logger.e(logTag, pE);
                 }
             }
@@ -168,7 +169,7 @@ public final class LoggerInterceptor implements Interceptor {
                         NetLog.print(sb.toString());
                         // 显示详情
                         if (logDetails) {
-                            if(net_log_open) {
+                            if (net_log_open) {
                                 Logger.e(logTag, pE);
                             }
                         }
@@ -195,7 +196,7 @@ public final class LoggerInterceptor implements Interceptor {
         return response;
     }
 
-    private boolean isPlaintext(Buffer buffer) {
+    private boolean isPlaintext(@NonNull Buffer buffer) {
         if (buffer == null || buffer.size() <= 0) {
             return false;
         }
@@ -218,7 +219,7 @@ public final class LoggerInterceptor implements Interceptor {
         }
     }
 
-    private boolean bodyEncoded(Headers headers) {
+    private boolean bodyEncoded(@NonNull Headers headers) {
         String contentEncoding = headers.get("Content-Encoding");
         return contentEncoding != null && !contentEncoding.equalsIgnoreCase("identity");
     }

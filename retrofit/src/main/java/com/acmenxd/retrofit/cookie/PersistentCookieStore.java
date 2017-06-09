@@ -1,11 +1,13 @@
 package com.acmenxd.retrofit.cookie;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.acmenxd.logger.Logger;
 import com.acmenxd.retrofit.NetManager;
 import com.acmenxd.sptool.SpManager;
 import com.acmenxd.sptool.SpTool;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +30,7 @@ import okhttp3.HttpUrl;
  * @date 2017/1/6 11:12
  * @detail NetCookie
  */
-public class PersistentCookieStore {
+public final class PersistentCookieStore {
     private final SpTool cookieSp;
     private final String cookieSpName = "spCookie";
     private final Map<String, ConcurrentHashMap<String, Cookie>> cookies;
@@ -57,11 +59,11 @@ public class PersistentCookieStore {
         }
     }
 
-    protected String getCookieToken(Cookie cookie) {
+    protected String getCookieToken(@NonNull Cookie cookie) {
         return cookie.name() + "@" + cookie.domain();
     }
 
-    public void add(HttpUrl url, Cookie cookie) {
+    public void add(@NonNull HttpUrl url, @NonNull Cookie cookie) {
         String name = getCookieToken(cookie);
 
         //将cookies缓存到内存中 如果缓存过期 就重置此cookie
@@ -81,7 +83,7 @@ public class PersistentCookieStore {
         cookieSp.putString(name, encodeCookie(new NetCookies(cookie)));
     }
 
-    public List<Cookie> get(HttpUrl url) {
+    public List<Cookie> get(@NonNull HttpUrl url) {
         ArrayList<Cookie> ret = new ArrayList<>();
         if (cookies.containsKey(url.host()))
             ret.addAll(cookies.get(url.host()).values());
@@ -94,7 +96,7 @@ public class PersistentCookieStore {
         return true;
     }
 
-    public boolean remove(HttpUrl url, Cookie cookie) {
+    public boolean remove(@NonNull HttpUrl url, @NonNull Cookie cookie) {
         String name = getCookieToken(cookie);
         if (cookies.containsKey(url.host()) && cookies.get(url.host()).containsKey(name)) {
             cookies.get(url.host()).remove(name);
@@ -122,7 +124,7 @@ public class PersistentCookieStore {
      * @param cookie 要序列化的cookie
      * @return 序列化之后的string
      */
-    protected String encodeCookie(NetCookies cookie) {
+    protected String encodeCookie(@NonNull NetCookies cookie) {
         if (cookie == null)
             return null;
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -130,7 +132,7 @@ public class PersistentCookieStore {
             ObjectOutputStream outputStream = new ObjectOutputStream(os);
             outputStream.writeObject(cookie);
         } catch (IOException pE) {
-            if(net_log_open) {
+            if (net_log_open) {
                 Logger.e(pE);
             }
             return null;
@@ -144,7 +146,7 @@ public class PersistentCookieStore {
      * @param cookieString cookies string
      * @return cookie object
      */
-    protected Cookie decodeCookie(String cookieString) {
+    protected Cookie decodeCookie(@NonNull String cookieString) {
         byte[] bytes = hexStringToByteArray(cookieString);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         Cookie cookie = null;
@@ -152,11 +154,11 @@ public class PersistentCookieStore {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             cookie = ((NetCookies) objectInputStream.readObject()).getCookies();
         } catch (IOException pE) {
-            if(net_log_open) {
+            if (net_log_open) {
                 Logger.e(pE);
             }
         } catch (ClassNotFoundException pE) {
-            if(net_log_open) {
+            if (net_log_open) {
                 Logger.e(pE);
             }
         }
@@ -169,7 +171,7 @@ public class PersistentCookieStore {
      * @param bytes byte array to be converted
      * @return string containing hex values
      */
-    protected String byteArrayToHexString(byte[] bytes) {
+    protected String byteArrayToHexString(@NonNull byte[] bytes) {
         StringBuilder sb = new StringBuilder(bytes.length * 2);
         for (byte element : bytes) {
             int v = element & 0xff;
@@ -187,7 +189,7 @@ public class PersistentCookieStore {
      * @param hexString string of hex-encoded values
      * @return decoded byte array
      */
-    protected byte[] hexStringToByteArray(String hexString) {
+    protected byte[] hexStringToByteArray(@NonNull String hexString) {
         int len = hexString.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

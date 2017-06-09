@@ -13,7 +13,7 @@ import okhttp3.HttpUrl;
  * @date 2017/1/6 11:11
  * @detail NetCookie
  */
-public class NetCookieJar implements CookieJar {
+public final class NetCookieJar implements CookieJar {
     private static NetCookieJar mCookieManager;
     private static PersistentCookieStore cookieStore;
 
@@ -21,8 +21,8 @@ public class NetCookieJar implements CookieJar {
         cookieStore = new PersistentCookieStore();
     }
 
-    public static NetCookieJar create(){
-        if (mCookieManager == null){
+    public static NetCookieJar create() {
+        if (mCookieManager == null) {
             mCookieManager = new NetCookieJar();
         }
         return mCookieManager;

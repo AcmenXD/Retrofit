@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -27,7 +29,7 @@ public class NetEntity<T> implements Serializable {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public void setMsg(@NonNull String msg) {
         this.msg = msg;
     }
 
@@ -35,7 +37,7 @@ public class NetEntity<T> implements Serializable {
         return data;
     }
 
-    public void setData(T pData) {
+    public void setData(@NonNull T pData) {
         data = pData;
     }
 }

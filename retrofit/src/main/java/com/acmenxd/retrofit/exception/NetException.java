@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.exception;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author AcmenXD
  * @version v1.0
@@ -16,14 +18,14 @@ public class NetException extends Exception {
     // 提示用户信息
     private String toastMsg;
 
-    public NetException(Throwable pThrowable, int pCode, String pMsg, String pToastMsg) {
+    public NetException(@NonNull Throwable pThrowable, int pCode, @NonNull String pMsg, @NonNull String pToastMsg) {
         super(pThrowable);
         this.code = pCode;
         this.msg = pMsg;
         this.toastMsg = pToastMsg;
     }
 
-    public NetException(int pCode, String pMsg, String pToastMsg) {
+    public NetException(int pCode, @NonNull String pMsg, @NonNull String pToastMsg) {
         super(pMsg);
         this.code = pCode;
         this.msg = pMsg;

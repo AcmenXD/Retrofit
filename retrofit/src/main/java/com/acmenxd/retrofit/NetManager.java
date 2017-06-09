@@ -2,6 +2,8 @@ package com.acmenxd.retrofit;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 
 import com.acmenxd.logger.LogTag;
 import com.acmenxd.logger.LogType;
@@ -42,7 +44,7 @@ public enum NetManager {
     /**
      * 初始化
      */
-    private void init(Builder pBuilder) {
+    private void init(@NonNull Builder pBuilder) {
         mBuilder = pBuilder;
         //初始化Retrofit
         mRetrofit = createRetrofit(createClient(mBuilder.getConnect_timeout(), mBuilder.getRead_timeout(), mBuilder.getWrite_timeout()));
@@ -51,7 +53,7 @@ public enum NetManager {
     /**
      * 获取IAllRequest实例
      */
-    public <T> T commonRequest(Class<T> pIRequest) {
+    public <T> T commonRequest(@NonNull Class<T> pIRequest) {
         if (mAllRequest == null) {
             mAllRequest = mRetrofit.create(pIRequest);
         }
@@ -61,7 +63,7 @@ public enum NetManager {
     /**
      * 根据IRequest类获取Request实例
      */
-    public <T> T request(Class<T> pIRequest) {
+    public <T> T request(@NonNull Class<T> pIRequest) {
         mAllRequest = null;
         return mRetrofit.create(pIRequest);
     }
@@ -70,7 +72,7 @@ public enum NetManager {
      * 创建新的Retrofit实例
      * 根据IRequest类获取Request实例
      */
-    public <T> T newRequest(Class<T> pIRequest) {
+    public <T> T newRequest(@NonNull Class<T> pIRequest) {
         return newRequest(mBuilder.getConnect_timeout(), mBuilder.getRead_timeout(), mBuilder.getWrite_timeout(), pIRequest);
     }
 
@@ -78,14 +80,14 @@ public enum NetManager {
      * 创建新的Retrofit实例,并设置超时时间
      * 根据IRequest类获取Request实例
      */
-    public <T> T newRequest(int connectTimeout, int readTimeout, int writeTimeout, Class<T> pIRequest) {
+    public <T> T newRequest(@IntRange(from = 0) int connectTimeout, @IntRange(from = 0) int readTimeout, @IntRange(from = 0) int writeTimeout, @NonNull Class<T> pIRequest) {
         return createRetrofit(createClient(connectTimeout, readTimeout, writeTimeout)).create(pIRequest);
     }
 
     /**
      * 创建 Retrofit实例
      */
-    private Retrofit createRetrofit(OkHttpClient client) {
+    private Retrofit createRetrofit(@NonNull OkHttpClient client) {
         Retrofit retrofit = new Retrofit.Builder()
                 // 设置baseUrl
                 .baseUrl(mBuilder.getBase_url())
@@ -103,7 +105,7 @@ public enum NetManager {
     /**
      * 创建 OkHttpClient实例
      */
-    private OkHttpClient createClient(int connectTimeout, int readTimeout, int writeTimeout) {
+    private OkHttpClient createClient(@IntRange(from = 0) int connectTimeout, @IntRange(from = 0) int readTimeout, @IntRange(from = 0) int writeTimeout) {
         OkHttpClient.Builder mClientBuilder = new OkHttpClient.Builder();
         // 添加参数
         mClientBuilder.addInterceptor(new ParameterInterceptor());
@@ -194,17 +196,17 @@ public enum NetManager {
         // 公共Body
         private Map<String, String> bodyMaps = new HashMap<>();
 
-        public Builder setContext(Context pContext) {
+        public Builder setContext(@NonNull Context pContext) {
             context = pContext;
             return this;
         }
 
-        public Builder setParseNetCode(NetCodeUtils.startParseNetCode pParseNetCode) {
+        public Builder setParseNetCode(@NonNull NetCodeUtils.startParseNetCode pParseNetCode) {
             parseNetCode = pParseNetCode;
             return this;
         }
 
-        public Builder setBase_url(String pBase_url) {
+        public Builder setBase_url(@NonNull String pBase_url) {
             base_url = pBase_url;
             return this;
         }
@@ -214,17 +216,17 @@ public enum NetManager {
             return this;
         }
 
-        public Builder setNet_log_level(int level) {
+        public Builder setNet_log_level(@IntRange(from = 0) int pLogLevel) {
             LogType[] types = LogType.values();
             for (int i = 0, len = types.length; i < len; i++) {
-                if (level == types[i].intValue()) {
+                if (pLogLevel == types[i].intValue()) {
                     net_log_level = types[i];
                 }
             }
             return this;
         }
 
-        public Builder setNet_log_tag(String pNet_log_tag) {
+        public Builder setNet_log_tag(@NonNull String pNet_log_tag) {
             net_log_tag = LogTag.mk(pNet_log_tag);
             return this;
         }
@@ -239,32 +241,32 @@ public enum NetManager {
             return this;
         }
 
-        public Builder setNet_cache_dir(File pNet_cache_dir) {
+        public Builder setNet_cache_dir(@NonNull File pNet_cache_dir) {
             net_cache_dir = pNet_cache_dir;
             return this;
         }
 
-        public Builder setNet_cache_type(int pNet_cache_type) {
+        public Builder setNet_cache_type(@IntRange(from = 0) int pNet_cache_type) {
             net_cache_type = pNet_cache_type;
             return this;
         }
 
-        public Builder setNet_cache_size(int pNet_cache_size) {
+        public Builder setNet_cache_size(@IntRange(from = 0) int pNet_cache_size) {
             net_cache_size = pNet_cache_size;
             return this;
         }
 
-        public Builder setConnect_timeout(int pConnect_timeout) {
+        public Builder setConnect_timeout(@IntRange(from = 0) int pConnect_timeout) {
             connect_timeout = pConnect_timeout;
             return this;
         }
 
-        public Builder setRead_timeout(int pRead_timeout) {
+        public Builder setRead_timeout(@IntRange(from = 0) int pRead_timeout) {
             read_timeout = pRead_timeout;
             return this;
         }
 
-        public Builder setWrite_timeout(int pWrite_timeout) {
+        public Builder setWrite_timeout(@IntRange(from = 0) int pWrite_timeout) {
             write_timeout = pWrite_timeout;
             return this;
         }
@@ -274,22 +276,22 @@ public enum NetManager {
             return this;
         }
 
-        public Builder setParameterMaps(Map<String, String> pParameterMaps) {
+        public Builder setParameterMaps(@NonNull Map<String, String> pParameterMaps) {
             parameterMaps = pParameterMaps;
             return this;
         }
 
-        public Builder setHeaderMaps(Map<String, String> pHeaderMaps) {
+        public Builder setHeaderMaps(@NonNull Map<String, String> pHeaderMaps) {
             headerMaps = pHeaderMaps;
             return this;
         }
 
-        public Builder setHeaderMaps2(Map<String, String> pHeaderMaps2) {
+        public Builder setHeaderMaps2(@NonNull Map<String, String> pHeaderMaps2) {
             headerMaps2 = pHeaderMaps2;
             return this;
         }
 
-        public Builder setBodyMaps(Map<String, String> pBodyMaps) {
+        public Builder setBodyMaps(@NonNull Map<String, String> pBodyMaps) {
             bodyMaps = pBodyMaps;
             return this;
         }

@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit;
 
+import android.support.annotation.NonNull;
+
 import com.acmenxd.logger.LogTag;
 import com.acmenxd.logger.LogType;
 import com.acmenxd.logger.Logger;
@@ -11,12 +13,12 @@ import com.acmenxd.logger.Logger;
  * @date 2017/1/3 18:27
  * @detail 网络日志输出类
  */
-public class NetLog {
+public final class NetLog {
 
     /**
      * Net 日志输出
      */
-    public static void print(String inStr) {
+    public static void print(@NonNull String inStr) {
         NetManager.Builder builder = NetManager.INSTANCE.getBuilder();
         boolean net_log_open = builder.isNet_log_open();
         LogType logType = builder.getNet_log_level();

@@ -1,5 +1,7 @@
 package com.acmenxd.retrofit.cookie;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,11 +16,11 @@ import okhttp3.Cookie;
  * @date 2017/1/6 11:13
  * @detail NetCookie
  */
-public class NetCookies implements Serializable {
+public final class NetCookies implements Serializable {
     private transient final Cookie cookies;
     private transient Cookie clientCookies;
 
-    public NetCookies(Cookie cookies) {
+    public NetCookies(@NonNull Cookie cookies) {
         this.cookies = cookies;
     }
 
@@ -30,7 +32,7 @@ public class NetCookies implements Serializable {
         return bestCookies;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(@NonNull ObjectOutputStream out) throws IOException {
         out.writeObject(cookies.name());
         out.writeObject(cookies.value());
         out.writeLong(cookies.expiresAt());
@@ -42,7 +44,7 @@ public class NetCookies implements Serializable {
         out.writeBoolean(cookies.persistent());
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(@NonNull ObjectInputStream in) throws IOException, ClassNotFoundException {
         String name = (String) in.readObject();
         String value = (String) in.readObject();
         long expiresAt = in.readLong();

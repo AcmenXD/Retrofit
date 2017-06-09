@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.ParseException;
+import android.support.annotation.NonNull;
 
 import com.acmenxd.retrofit.exception.NetException;
 import com.acmenxd.retrofit.exception.NetNoDataBodyException;
@@ -75,7 +76,7 @@ public final class NetError {
     /**
      * 分解异常情况
      */
-    public static NetException parseException(Throwable pE) {
+    public static NetException parseException(@NonNull Throwable pE) {
         int code = ERROR;
         String msg = MSG;
         String toastMsg = TOAST_MSG;
