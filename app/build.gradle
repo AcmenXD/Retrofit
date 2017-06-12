@@ -32,10 +32,10 @@ dependencies {
     /**
      * 响应式编程
      */
-    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxandroid:1.2.0'
     /**
      * 基于Retrofit进行的封装
      */
-    compile 'com.github.AcmenXD:Retrofit:2.0'
-//    compile project(':retrofit')
+    //    compile 'com.github.AcmenXD:Retrofit:2.1'
+    compile project(':retrofit')
 }

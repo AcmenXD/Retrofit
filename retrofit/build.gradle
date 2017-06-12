@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -34,14 +34,10 @@ dependencies {
     compile 'com.github.AcmenXD:SpTool:1.2'
     compile 'com.github.AcmenXD:Logger:2.0'
     /**
-     * 响应式编程
-     */
-    compile 'io.reactivex:rxjava:1.2.4'
-    /**
      * 网络库
      */
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
 }
