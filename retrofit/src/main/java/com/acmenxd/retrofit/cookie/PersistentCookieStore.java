@@ -59,6 +59,7 @@ public final class PersistentCookieStore {
         }
     }
 
+    /* 此种方式会导致程序崩溃
     protected String getCookieToken(@NonNull Cookie cookie) {
         return cookie.name() + "@" + cookie.domain();
     }
@@ -78,6 +79,26 @@ public final class PersistentCookieStore {
             }
         }
 
+        //将cookies持久化到本地
+        cookieSp.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
+        cookieSp.putString(name, encodeCookie(new NetCookies(cookie)));
+    }*/
+
+    protected String getCookieToken(@NonNull Cookie cookie) {
+        return cookie.name();
+    }
+
+    public void add(@NonNull HttpUrl url, @NonNull Cookie cookie) {
+        String name = getCookieToken(cookie);
+        //将cookies缓存到内存中 如果缓存过期 就重置此cookie
+        if (!cookies.containsKey(url.host())) {
+            cookies.put(url.host(), new ConcurrentHashMap<String, Cookie>());
+        }
+        if (!cookie.persistent()) {
+            cookies.get(url.host()).remove(name);
+        } else {
+            cookies.get(url.host()).put(name, cookie);
+        }
         //将cookies持久化到本地
         cookieSp.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
         cookieSp.putString(name, encodeCookie(new NetCookies(cookie)));

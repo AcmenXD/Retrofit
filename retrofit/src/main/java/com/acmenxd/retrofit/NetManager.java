@@ -121,7 +121,7 @@ public enum NetManager {
             mClientBuilder.addInterceptor(new LoggerInterceptor());
         }
         // 启用Gzip压缩
-        mClientBuilder.addInterceptor(new GzipInterceptor());
+        // mClientBuilder.addInterceptor(new GzipInterceptor());
         // 设置缓存
         if (mBuilder.getNet_cache_type() != 0) {
             // mBuilder.addNetworkInterceptor(new NetCacheInterceptor3()); // 功能尚未完成,无法使用

@@ -3,6 +3,7 @@ package com.acmenxd.retrofit.callback;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+import com.acmenxd.retrofit.BaseEntity;
 import com.acmenxd.retrofit.NetCodeUtils;
 import com.acmenxd.retrofit.NetEntity;
 import com.acmenxd.retrofit.NetError;
@@ -85,6 +86,30 @@ public abstract class NetSubscriber<T> {
                     success(data);
                 } else {
                     NetException exception = parseNetCode.parse(((NetEntity) data).getCode(), ((NetEntity) data).getMsg());
+                    NetCodeUtils.netCodeResult(exception, new NetCodeUtils.NetCodeCallback() {
+                        @Override
+                        public void successData(NetExceptionSuccess pE) {
+                            success(data);
+                        }
+
+                        @Override
+                        public void errorData(NetExceptionFail pE) {
+                            onError(pE);
+                        }
+
+                        @Override
+                        public void unknownCode(NetExceptionUnknownCode pE) {
+                            onError(pE);
+                        }
+                    });
+                }
+            } else if (data instanceof BaseEntity) {
+                // 服务器响应的code和msg统一交给NetCode处理
+                NetCodeUtils.startParseNetCode parseNetCode = NetManager.INSTANCE.getBuilder().getParseNetCode();
+                if (parseNetCode == null) {
+                    success(data);
+                } else {
+                    NetException exception = parseNetCode.parse(((BaseEntity) data).getCode(), ((BaseEntity) data).getMsg());
                     NetCodeUtils.netCodeResult(exception, new NetCodeUtils.NetCodeCallback() {
                         @Override
                         public void successData(NetExceptionSuccess pE) {
