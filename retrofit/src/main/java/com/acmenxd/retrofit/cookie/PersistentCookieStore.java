@@ -94,11 +94,7 @@ public final class PersistentCookieStore {
         if (!cookies.containsKey(url.host())) {
             cookies.put(url.host(), new ConcurrentHashMap<String, Cookie>());
         }
-        if (!cookie.persistent()) {
-            cookies.get(url.host()).remove(name);
-        } else {
-            cookies.get(url.host()).put(name, cookie);
-        }
+        cookies.get(url.host()).put(name, cookie);
         //将cookies持久化到本地
         cookieSp.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
         cookieSp.putString(name, encodeCookie(new NetCookies(cookie)));
