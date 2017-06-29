@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public IAllRequest request() {
-        return NetManager.INSTANCE.commonRequest(IAllRequest.class);
+        return request(IAllRequest.class);
     }
 
     public final <T> T request(Class<T> pIRequest) {

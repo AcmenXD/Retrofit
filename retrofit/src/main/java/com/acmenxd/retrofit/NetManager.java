@@ -39,7 +39,6 @@ public enum NetManager {
 
     private Builder mBuilder;
     private Retrofit mRetrofit;
-    private Object mAllRequest;
 
     /**
      * 初始化
@@ -51,20 +50,9 @@ public enum NetManager {
     }
 
     /**
-     * 获取IAllRequest实例
-     */
-    public <T> T commonRequest(@NonNull Class<T> pIRequest) {
-        if (mAllRequest == null) {
-            mAllRequest = mRetrofit.create(pIRequest);
-        }
-        return (T) mAllRequest;
-    }
-
-    /**
      * 根据IRequest类获取Request实例
      */
     public <T> T request(@NonNull Class<T> pIRequest) {
-        mAllRequest = null;
         return mRetrofit.create(pIRequest);
     }
 
