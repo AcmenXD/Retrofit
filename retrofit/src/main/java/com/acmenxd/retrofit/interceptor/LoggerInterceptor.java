@@ -103,6 +103,7 @@ public final class LoggerInterceptor implements Interceptor {
                 }
             }
         }
+        NetLog.print("请求已发起:" + request.url());
         /**
          * 响应response
          */
