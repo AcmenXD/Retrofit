@@ -45,6 +45,7 @@
 ```
 ### 功能
 ---
+- 3.0完善很多功能,并修复诸多bug
 - 统一添加公共parameter & header & body
 - Log日志级别定义
 - cookie自动管理
