@@ -54,7 +54,7 @@
 - 支持Bitmap直接上传和下载
 ### 配置
 ---
-**在Application中配置 > 只是个配置参考,除context和base_url必须设置外,其他都可用默认配置**
+**在Application中配置(包含Logger & SpTool的配置) > 只是个配置参考,除context和base_url必须设置外,其他都可用默认配置**
 ```java
 //------------------------------------Logger配置---------------------------------
 Logger.LOG_OPEN = true;
