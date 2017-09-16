@@ -6,8 +6,8 @@ import android.text.format.Formatter;
 
 import com.acmenxd.logger.LogTag;
 import com.acmenxd.logger.Logger;
-import com.acmenxd.retrofit.NetLog;
-import com.acmenxd.retrofit.NetManager;
+import com.acmenxd.retrofit.HttpManager;
+import com.acmenxd.retrofit.utils.RetrofitUtils;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -38,11 +38,10 @@ import okio.BufferedSource;
 public final class LoggerInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
-        NetManager.Builder builder = NetManager.INSTANCE.getBuilder();
-        boolean net_log_open = builder.isNet_log_open();
-        boolean logDetails = builder.isNet_log_details();
-        LogTag logTag = builder.getNet_log_tag();
-        Context context = builder.getContext();
+        boolean net_log_open = Logger.LOG_OPEN;
+        boolean logDetails = HttpManager.INSTANCE.net_log_details;
+        LogTag logTag = HttpManager.INSTANCE.net_log_tag;
+        Context context = HttpManager.INSTANCE.context;
         // 日志String
         StringBuilder sb = new StringBuilder();
         // 请求request
@@ -51,6 +50,7 @@ public final class LoggerInterceptor implements Interceptor {
             // 日志关闭,直接返回
             return chain.proceed(request);
         }
+        Logger.w(logTag, "请求已发起:" + request.url());
         if (logDetails) {
             sb.append("请求方式: ").append(request.method()).append("\n");
             Connection requestConnection = chain.connection();
@@ -88,22 +88,19 @@ public final class LoggerInterceptor implements Interceptor {
                 } else {
                     sb.append("\tContent-Length: ").append("unknown-length").append("\n");
                 }
-                if (charset != null) {
-                    if (!bodyEncoded(requestHeaders) && !(requestBody instanceof MultipartBody)) {
-                        Buffer buffer = new Buffer();
-                        requestBody.writeTo(buffer);
-                        if (isPlaintext(buffer)) {
-                            sb.append("\tParameters: ").append(buffer.clone().readString(charset)).append("\n");
-                        } else {
-                            sb.append("\tParameters: ").append(charStr).append("\n");
-                        }
+                if (charset != null && !(requestBody instanceof MultipartBody) && contentType(requestBody.contentType().toString())) {
+                    Buffer buffer = new Buffer();
+                    requestBody.writeTo(buffer);
+                    if (isPlaintext(buffer)) {
+                        sb.append("\tParameters: ").append(buffer.clone().readString(charset)).append("\n");
                     } else {
                         sb.append("\tParameters: ").append(charStr).append("\n");
                     }
+                } else {
+                    sb.append("\tParameters: ").append(charStr).append("\n");
                 }
             }
         }
-        NetLog.print("请求已发起:" + request.url());
         /**
          * 响应response
          */
@@ -113,7 +110,7 @@ public final class LoggerInterceptor implements Interceptor {
             response = chain.proceed(request);
         } catch (Exception pE) {
             sb.append("-----------------Http Failed!-------------------");
-            NetLog.print(sb.toString());
+            Logger.w(logTag, sb.toString());
             // 显示详情
             if (logDetails) {
                 if (net_log_open) {
@@ -167,7 +164,7 @@ public final class LoggerInterceptor implements Interceptor {
                         charset = contentType.charset(Charset.forName("UTF-8"));
                     } catch (Exception pE) {
                         sb.append("无法解析的响应体,字符集可能是异常的!");
-                        NetLog.print(sb.toString());
+                        Logger.w(logTag, sb.toString());
                         // 显示详情
                         if (logDetails) {
                             if (net_log_open) {
@@ -180,12 +177,10 @@ public final class LoggerInterceptor implements Interceptor {
                 if (logDetails) {
                     sb.append("\t").append("Size: ").append(Formatter.formatFileSize(context, buffer.size())).append("\n");
                 }
-                if (charset != null) {
-                    if (isPlaintext(buffer) && !bodyEncoded(request.headers())) {
-                        sb.append("\tParameters: ").append(buffer.clone().readString(charset)).append("\n");
-                    } else {
-                        sb.append("\tParameters: ").append(charStr).append("\n");
-                    }
+                if (charset != null && isPlaintext(buffer) && contentType(response.headers().get("Content-Type"))) {
+                    sb.append("\tParameters: ").append(buffer.clone().readString(charset)).append("\n");
+                } else {
+                    sb.append("\tParameters: ").append(charStr).append("\n");
                 }
             }
         }
@@ -193,7 +188,7 @@ public final class LoggerInterceptor implements Interceptor {
         if (inStr.endsWith("\n")) {
             inStr = inStr.substring(0, inStr.length() - 1);
         }
-        NetLog.print(inStr);
+        Logger.w(logTag, inStr);
         return response;
     }
 
@@ -220,9 +215,12 @@ public final class LoggerInterceptor implements Interceptor {
         }
     }
 
-    private boolean bodyEncoded(@NonNull Headers headers) {
-        String contentEncoding = headers.get("Content-Encoding");
-        return contentEncoding != null && !contentEncoding.equalsIgnoreCase("identity");
+    private boolean contentType(@NonNull String contentTypeStr) {
+        if (!RetrofitUtils.isEmpty(contentTypeStr)
+                && (contentTypeStr.contains("UTF-8") || contentTypeStr.contains("json") || contentTypeStr.contains("x-www-form-urlencoded")
+                || contentTypeStr.contains("html") || contentTypeStr.contains("text") || contentTypeStr.contains("xml"))) {
+            return true;
+        }
+        return false;
     }
-
 }

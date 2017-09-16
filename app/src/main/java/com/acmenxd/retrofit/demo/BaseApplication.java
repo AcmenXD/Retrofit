@@ -2,14 +2,20 @@ package com.acmenxd.retrofit.demo;
 
 import android.app.Application;
 import android.content.res.Configuration;
-import android.util.Log;
+import android.os.Environment;
 
-import com.acmenxd.retrofit.NetCodeUtils;
-import com.acmenxd.retrofit.NetManager;
-import com.acmenxd.retrofit.demo.net.NetCode;
-import com.acmenxd.retrofit.exception.NetException;
+import com.acmenxd.logger.LogTag;
+import com.acmenxd.logger.LogType;
+import com.acmenxd.logger.Logger;
+import com.acmenxd.retrofit.HttpManager;
+import com.acmenxd.retrofit.HttpMutualCallback;
+import com.acmenxd.retrofit.demo.http.ResultCallback;
+import com.acmenxd.retrofit.demo.utils.EncodeDecode;
+import com.acmenxd.sptool.SpEncodeDecodeCallback;
+import com.acmenxd.sptool.SpManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,10 +86,11 @@ public final class BaseApplication extends Application {
     /**
      * Net 配置
      */
-    // 请求地址配置 -1:正式版  0->预发布  1->测试1  2->测试2  3->测试3
+    // 请求地址配置 -1:正式版  0->预发布  1->测试1  2->测试2
     public static final byte URL_Type = 1;
     // 基础url配置
     public static final String BASE_URL;
+
     // 配置连接地址
     static {
         switch (URL_Type) {
@@ -108,73 +115,99 @@ public final class BaseApplication extends Application {
                 break;
         }
     }
-    // Net Log 的开关
-    public static final boolean NET_LOG_OPEN = true;
-    // Net Log 的日志级别
-    public static final int NET_LOG_LEVEL = Log.WARN;
-    // Net Log 的日志Tag
-    public static final String NET_LOG_TAG = "NetLog";
-    // Net Log 的日志显示形式 -> 是否显示 "请求头 请求体 响应头 错误日志" 等详情
-    public static final boolean NET_LOG_DETAILS = true;
-    // Net Log 的日志显示形式 -> 是否显示请求过程中的日志,包含详细的请求头日志
-    public static final boolean NET_LOG_DETAILS_All = false;
-    // 网络缓存策略: 0->不启用缓存  1->遵从服务器缓存配置
-    public static final int NET_CACHE_TYPE = 1;
-    // 网络缓存大小(MB)
-    public static final int NET_CACHE_SIZE = 10;
-    // 网络连接超时时间(秒)
-    public static final int CONNECT_TIMEOUT = 30;
-    // 读取超时时间(秒)
-    public static final int READ_TIMEOUT = 30;
-    // 写入超时时间(秒)
-    public static final int WRITE_TIMEOUT = 30;
-    // 非Form表单形式的请求体,是否加入公共Body
-    public static final boolean NOFORMBODY_CANADDBODY = false;
-    // 公共请求参数
-    public static final Map<String, String> ParameterMaps = new HashMap<>();
-    // 公共Header(不允许相同Key值存在)
-    public static final Map<String, String> HeaderMaps = new HashMap<>();
-    // 公共Header(允许相同Key值存在)
-    public static final Map<String, String> HeaderMaps2 = new HashMap<>();
-    // 公共Body
-    public static final Map<String, String> BodyMaps = new HashMap<>();
-    // 添加公共信息
-    static {
-        ParameterMaps.put("parameter_key_1", "parameter_value_1");
-        ParameterMaps.put("parameter_key_2", "parameter_value_2");
-        HeaderMaps.put("header_key_1", "header_value_1");
-        HeaderMaps.put("header_key_2", "header_value_2");
-        BodyMaps.put("body_key_1", "body_value_1");
-        BodyMaps.put("body_key_2", "body_value_2");
-    }
+
     public void initRetrofit() {
-        NetCodeUtils.startParseNetCode parseNetCode = new NetCodeUtils.startParseNetCode() {
+        //------------------------------------Logger配置---------------------------------
+        Logger.LOG_OPEN = true;
+        Logger.LOG_LEVEL = LogType.V;
+        Logger.APP_PKG_NAME = this.getPackageName();
+        Logger.LOGFILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Logger/";
+        //------------------------------------SpTool配置---------------------------------
+        // 设置全局Sp实例,项目启动时创建,并通过getCommonSp拿到,项目中只有一份实例
+        SpManager.CommonSp = new String[]{"spCookie"};
+        // 加解密回调 - 不设置或null表示不进行加解密处理
+        SpManager.setEncodeDecodeCallback(new SpEncodeDecodeCallback() {
             @Override
-            public NetException parse(int code, String msg) {
-                return NetCode.parseNetCode(code, msg);
+            public String encode(String pStr) {
+                String result = null;
+                try {
+                    result = EncodeDecode.encode(pStr);
+                } catch (IOException pE) {
+                    pE.printStackTrace();
+                }
+                return result;
+            }
+
+            @Override
+            public String decode(String pStr) {
+                String result = null;
+                try {
+                    result = EncodeDecode.decode(pStr);
+                } catch (IOException pE) {
+                    pE.printStackTrace();
+                } catch (ClassNotFoundException pE) {
+                    pE.printStackTrace();
+                }
+                return result;
+            }
+        });
+        // * 必须设置,否则无法使用
+        SpManager.setContext(this);
+        //------------------------------------Retrofit配置---------------------------------
+        // * 必须设置,否则无法使用 - 上下文对象(*必须设置)
+        HttpManager.INSTANCE.context = this;
+        // * 必须设置,否则无法使用 - 基础URL地址(*必须设置)
+        HttpManager.INSTANCE.base_url = BASE_URL;
+        // Net Log 的日志Tag
+        HttpManager.INSTANCE.net_log_tag = LogTag.mk("NetLog");
+        // Net Log 的日志显示形式 -> 是否显示 "请求头 请求体 响应头 错误日志" 等详情
+        HttpManager.INSTANCE.net_log_details = true;
+        // Net Log 的日志显示形式 -> 是否显示请求过程中的日志,包含详细的请求头日志
+        HttpManager.INSTANCE.net_log_details_all = false;
+        // 非Form表单形式的请求体,是否加入公共Body
+        HttpManager.INSTANCE.noformbody_canaddbody = false;
+        // 网络缓存默认存储路径
+        HttpManager.INSTANCE.net_cache_dir = new File(this.getCacheDir(), "NetCache");
+        // 网络缓存策略: 0->不启用缓存  1->遵从服务器缓存配置
+        HttpManager.INSTANCE.net_cache_type = 0;
+        // 网络缓存大小(MB)
+        HttpManager.INSTANCE.net_cache_size = 0;
+        // 网络连接超时时间(秒)
+        HttpManager.INSTANCE.connect_timeout = 10;
+        // 读取超时时间(秒)
+        HttpManager.INSTANCE.read_timeout = 30;
+        // 写入超时时间(秒)
+        HttpManager.INSTANCE.write_timeout = 30;
+        /**
+         * 设置请求返回时回调
+         */
+        HttpManager.INSTANCE.resultCallback = new ResultCallback();
+        /**
+         * 设置Net公共参数 -> 为动态配置而设置的此函数
+         */
+        HttpManager.INSTANCE.mutualCallback = new HttpMutualCallback() {
+            @Override
+            public Map<String, String> getBodys(String url, Map<String, String> oldMaps) {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> getParameters(String url) {
+                Map<String, String> maps = new HashMap<>();
+                maps.put("parameter_key_1", "parameter_value_1");
+                maps.put("parameter_key_2", "parameter_value_2");
+                return maps;
+            }
+
+            @Override
+            public Map<String, String> getHeaders(String url) {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> getReHeaders(String url) {
+                return null;
             }
         };
-        NetManager.newBuilder()
-                .setContext(this)// 上下文对象(*必须设置)
-                .setParseNetCode(parseNetCode)// 统一处理NetCode回调(如不设置则不会处理NetCode)
-                .setBase_url(BASE_URL)// 基础URL地址(*必须设置)
-                .setNet_log_open(NET_LOG_OPEN)// Net Log 的开关
-                .setNet_log_level(NET_LOG_LEVEL) // Net Log 的日志级别
-                .setNet_log_tag(NET_LOG_TAG) // Net Log 的日志Tag
-                .setNet_log_details(NET_LOG_DETAILS)// Net Log 的日志显示形式 -> 是否显示 "请求头 请求体 响应头 错误日志" 等详情
-                .setNet_log_details_all(NET_LOG_DETAILS_All)// Net Log 的日志显示形式 -> 是否显示请求过程中的日志,包含详细的请求头日志
-                .setNet_cache_dir(new File(BaseApplication.instance().getCacheDir(), "NetCache"))  // 网络缓存默认存储路径
-                .setNet_cache_type(NET_CACHE_TYPE) // 网络缓存策略: 0->不启用缓存  1->遵从服务器缓存配置
-                .setNet_cache_size(NET_CACHE_SIZE) // 网络缓存大小(MB)
-                .setConnect_timeout(CONNECT_TIMEOUT)  // 网络连接超时时间(秒)
-                .setRead_timeout(READ_TIMEOUT) // 读取超时时间(秒)
-                .setWrite_timeout(WRITE_TIMEOUT)  // 写入超时时间(秒)
-                .setNoformbody_canaddbody(NOFORMBODY_CANADDBODY) // 非Form表单形式的请求体,是否加入公共Body
-                .setParameterMaps(ParameterMaps) // 公共请求参数
-                .setHeaderMaps(HeaderMaps)  // 公共Header(不允许相同Key值存在)
-                .setHeaderMaps2(HeaderMaps2)  // 公共Header(允许相同Key值存在)
-                .setBodyMaps(BodyMaps)// 公共Body
-                .build();
     }
-
 }

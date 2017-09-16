@@ -1,8 +1,10 @@
 package com.acmenxd.retrofit.interceptor;
 
-import com.acmenxd.retrofit.NetManager;
+import com.acmenxd.retrofit.HttpManager;
+import com.acmenxd.retrofit.utils.RetrofitUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Interceptor;
@@ -21,20 +23,27 @@ public final class HeaderInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
         Request.Builder requestBuilder = original.newBuilder();
-        NetManager.Builder builder = NetManager.INSTANCE.getBuilder();
-        Map<String, String> headers = builder.getHeaderMaps();
-        Map<String, String> headers2 = builder.getHeaderMaps2();
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> headers2 = new HashMap<>();
+        if (HttpManager.INSTANCE.mutualCallback != null) {
+            headers = HttpManager.INSTANCE.mutualCallback.getHeaders(original.url().toString());
+            headers2 = HttpManager.INSTANCE.mutualCallback.getReHeaders(original.url().toString());
+        }
         //添加请求公共Header
         if (headers != null && headers.size() > 0) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 //header()如果有重名的将会覆盖
-                requestBuilder.header(entry.getKey(), entry.getValue());
+                if (entry != null && !RetrofitUtils.isEmpty(entry.getKey()) && !RetrofitUtils.isEmpty(entry.getValue())) {
+                    requestBuilder.header(entry.getKey(), entry.getValue());
+                }
             }
         }
         if (headers2 != null && headers2.size() > 0) {
             for (Map.Entry<String, String> entry : headers2.entrySet()) {
                 //addHeader()允许相同key值的header存在
-                requestBuilder.addHeader(entry.getKey(), entry.getValue());
+                if (entry != null && !RetrofitUtils.isEmpty(entry.getKey()) && !RetrofitUtils.isEmpty(entry.getValue())) {
+                    requestBuilder.addHeader(entry.getKey(), entry.getValue());
+                }
             }
         }
         Request request = requestBuilder.build();

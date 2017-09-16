@@ -30,12 +30,8 @@ dependencies {
      */
     compile 'com.android.support:appcompat-v7:25.0.0'
     /**
-     * 响应式编程
-     */
-    compile 'io.reactivex:rxandroid:1.2.0'
-    /**
      * 基于Retrofit进行的封装
      */
-    compile 'com.github.AcmenXD:Retrofit:2.2'
-//    compile project(':retrofit')
+//    compile 'com.github.AcmenXD:Retrofit:3.0'
+    compile project(':retrofit')
 }

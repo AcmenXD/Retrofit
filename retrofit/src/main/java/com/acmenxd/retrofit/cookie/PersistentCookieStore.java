@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.acmenxd.logger.Logger;
-import com.acmenxd.retrofit.NetManager;
 import com.acmenxd.sptool.SpManager;
 import com.acmenxd.sptool.SpTool;
 
@@ -34,7 +33,6 @@ public final class PersistentCookieStore {
     private final SpTool cookieSp;
     private final String cookieSpName = "spCookie";
     private final Map<String, ConcurrentHashMap<String, Cookie>> cookies;
-    private final boolean net_log_open = NetManager.INSTANCE.getBuilder().isNet_log_open();
 
     public PersistentCookieStore() {
         cookieSp = SpManager.getSp(cookieSpName);
@@ -90,27 +88,46 @@ public final class PersistentCookieStore {
 
     public void add(@NonNull HttpUrl url, @NonNull Cookie cookie) {
         String name = getCookieToken(cookie);
-        //将cookies缓存到内存中 如果缓存过期 就重置此cookie
         if (!cookies.containsKey(url.host())) {
             cookies.put(url.host(), new ConcurrentHashMap<String, Cookie>());
         }
         cookies.get(url.host()).put(name, cookie);
         //将cookies持久化到本地
         cookieSp.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
-        cookieSp.putString(name, encodeCookie(new NetCookies(cookie)));
+        cookieSp.putString(name, encodeCookie(new HttpCookies(cookie)));
     }
 
-    public List<Cookie> get(@NonNull HttpUrl url) {
+    public List<Cookie> getCookies(@NonNull HttpUrl url) {
         ArrayList<Cookie> ret = new ArrayList<>();
-        if (cookies.containsKey(url.host()))
-            ret.addAll(cookies.get(url.host()).values());
+        long time = System.currentTimeMillis();
+        if (cookies.containsKey(url.host())) {
+            ConcurrentHashMap<String, Cookie> maps = cookies.get(url.host());
+            for (Map.Entry<String, Cookie> entry : maps.entrySet()) {
+                if (entry.getValue().expiresAt() > time) {
+                    ret.add(entry.getValue());
+                }
+            }
+        }
         return ret;
     }
 
-    public boolean removeAll() {
-        cookieSp.clear();
+    public List<Cookie> getCookies() {
+        ArrayList<Cookie> ret = new ArrayList<>();
+        long time = System.currentTimeMillis();
+        for (Map.Entry<String, ConcurrentHashMap<String, Cookie>> entry : cookies.entrySet()) {
+            ConcurrentHashMap<String, Cookie> maps = entry.getValue();
+            for (Map.Entry<String, Cookie> cookieEntry : maps.entrySet()) {
+                if (cookieEntry.getValue().expiresAt() > time) {
+                    ret.add(cookieEntry.getValue());
+                }
+            }
+        }
+        return ret;
+    }
+
+    public void removeAll() {
         cookies.clear();
-        return true;
+        cookieSp.clear();
     }
 
     public boolean remove(@NonNull HttpUrl url, @NonNull Cookie cookie) {
@@ -127,21 +144,13 @@ public final class PersistentCookieStore {
         }
     }
 
-    public List<Cookie> getCookies() {
-        ArrayList<Cookie> ret = new ArrayList<>();
-        for (String key : cookies.keySet()) {
-            ret.addAll(cookies.get(key).values());
-        }
-        return ret;
-    }
-
     /**
      * cookies 序列化成 string
      *
      * @param cookie 要序列化的cookie
      * @return 序列化之后的string
      */
-    protected String encodeCookie(@NonNull NetCookies cookie) {
+    protected String encodeCookie(@NonNull HttpCookies cookie) {
         if (cookie == null)
             return null;
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -149,9 +158,7 @@ public final class PersistentCookieStore {
             ObjectOutputStream outputStream = new ObjectOutputStream(os);
             outputStream.writeObject(cookie);
         } catch (IOException pE) {
-            if (net_log_open) {
-                Logger.e(pE);
-            }
+            Logger.e(pE);
             return null;
         }
         return byteArrayToHexString(os.toByteArray());
@@ -169,15 +176,11 @@ public final class PersistentCookieStore {
         Cookie cookie = null;
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            cookie = ((NetCookies) objectInputStream.readObject()).getCookies();
+            cookie = ((HttpCookies) objectInputStream.readObject()).getCookies();
         } catch (IOException pE) {
-            if (net_log_open) {
-                Logger.e(pE);
-            }
+            Logger.e(pE);
         } catch (ClassNotFoundException pE) {
-            if (net_log_open) {
-                Logger.e(pE);
-            }
+            Logger.e(pE);
         }
         return cookie;
     }
